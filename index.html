@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            #container {
+               position: relative;
+               background: purple;
+               width: 400px;
+               height: 400px;
+            }
+  
+            #box {
+               position: absolute;
+               background: red;
+               width: 30px;
+               height: 30px;
+            }
+
+            #box2  {
+               position: absolute;
+               background: blue;
+               width: 30px;
+               height: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <p id="click"></p>
+        <p id="yo playa"></p>
+        <br />
+        <button onclick="up(); upClicked();">↑</button>
+
+        <br />
+
+        <button onclick="left(); leftClicked();">←</button>
+
+        <button onclick="right(); rightClicked();">→</button>
+
+        <br />
+
+        <button onclick="down(); downClicked();">↓</button>
+
+        <br/>
+
+        <div id="container">
+           <div id="box" style="top: 0px; left: 0px;"></div>
+           <div id="box2" style="top: 0px; left: 0px;"></div>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script> 
+            var player;
+
+            var person = prompt("Player 1 or 2?");
+            if (person != null) {
+                if (person === "1"){
+                    player = 1;
+                } else if (person === "2") {
+                    player = 2;
+                }
+            }
+
+            var x = document.getElementById("yo playa");
+
+            if(player === 1){
+                x.innerText = "player1";
+            } else if (player === 2) {
+                x.innerText = "player2";
+            }
+
+                var box = document.getElementById("box");
+                var box2 = document.getElementById("box2");
+
+                function up(playa = player) {
+                    if (playa === 1) {
+                        box.style.top = (parseInt(box.style.top) - 30) + 'px';
+                    } else if (playa === 2 ) {
+                        box2.style.top = (parseInt(box2.style.top) - 30) + 'px';                   
+                    }
+                }
+
+                function right(playa = player) {
+                    if (playa === 1) {
+                        box.style.left = (parseInt(box.style.left) + 30) + 'px';
+                    } else if (playa === 2) {
+                        box2.style.left = (parseInt(box2.style.left) + 30) + 'px';
+                    }
+                }
+
+                function left(playa = player) {
+                    if (playa === 1) {
+                        box.style.left = (parseInt(box.style.left) - 30) + 'px';
+                    } else if (playa === 2) {
+                        box2.style.left = (parseInt(box2.style.left) - 30) + 'px';
+                    }
+                }
+
+                function down(playa = player) {
+                    if (playa === 1) {
+                        box.style.top = (parseInt(box.style.top) + 30) + 'px';
+                    } else if (playa === 2) {
+                        box2.style.top = (parseInt(box2.style.top) + 30) + 'px';
+                    }
+                }
+        </script>
+        <script>
+            var socket = io();
+
+            function upClicked(){
+                var y = document.getElementById("click");
+                y.innerText = "UP!";
+
+                var z = document.getElementById("yo playa");
+                socket.emit("clickEvent", "up!" + z.innerText);
+            }
+            function leftClicked(){
+                var y = document.getElementById("click");
+                y.innerText = "LEFT!";
+
+                var z = document.getElementById("yo playa");
+                socket.emit("clickEvent", "left!" + z.innerText);
+            }
+            function rightClicked(){
+                var y = document.getElementById("click");
+                y.innerText = "RIGHT!";
+
+                var z = document.getElementById("yo playa");
+                socket.emit("clickEvent", "right!" + z.innerText);
+            }
+            function downClicked(){
+                var y = document.getElementById("click");
+                y.innerText = "DOWN!";
+
+                var z = document.getElementById("yo playa");
+                socket.emit("clickEvent", "down!" + z.innerText);
+            }
+
+            socket.on("moveEvent", (arg) => {
+                var p;
+                if(arg.includes("player1")) {
+                    p = 1;
+                    if(arg.includes("up")){
+                        var z = document.getElementById("yo playa");
+                        if (z.innerText === "player2"){
+                            up(p);
+                        }
+                        socket.emit("arrivedEvent", p);
+                    }
+                    if(arg.includes("left")){
+                        var z = document.getElementById("yo playa");
+                        if (z.innerText === "player2"){
+                            left(p);
+                        }
+                        socket.emit("arrivedEvent", p);
+                    }
+                    if(arg.includes("right")){
+                        var z = document.getElementById("yo playa");
+                        if (z.innerText === "player2"){
+                            right(p);
+                        }
+                        socket.emit("arrivedEvent", p);
+                    }
+                    if(arg.includes("down")){
+                        var z = document.getElementById("yo playa");
+                        if (z.innerText === "player2"){
+                            down(p);
+                        }
+                        socket.emit("arrivedEvent", p);
+                    }
+                } else if (arg.includes("player2")){
+                    p = 2;
+                    if(arg.includes("up")){
+                        var z = document.getElementById("yo playa");
+                        if (z.innerText === "player1"){
+                            up(p);
+                        }
+                        socket.emit("arrivedEvent", p);
+                    }
+                    if(arg.includes("left")){
+                        var z = document.getElementById("yo playa");
+                        if (z.innerText === "player1"){
+                            left(p);
+                        }
+                        socket.emit("arrivedEvent", p);
+                    }
+                    if(arg.includes("right")){
+                        var z = document.getElementById("yo playa");
+                        if (z.innerText === "player1"){
+                            right(p);
+                        }
+                        socket.emit("arrivedEvent", p);
+                    }
+                    if(arg.includes("down")){
+                        var z = document.getElementById("yo playa");
+                        if (z.innerText === "player1"){
+                            down(p);
+                        }
+                        socket.emit("arrivedEvent", p);
+                    }
+                }
+            })  
+        </script>
+    </body>
+</html>
